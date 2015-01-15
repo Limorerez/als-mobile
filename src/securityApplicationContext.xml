@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<bean id="mySuccessHandler" class="com.sap.als.security.SuccessHandler" />
+	<bean id="myFailureHandler"
+		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" />
+
+	<bean id="restAuthenticationEntryPoint" class="com.sap.als.security.RestAuthenticationEntryPoint" />
+
+	<bean id="customAuthenticationProvider" class="com.sap.als.security.CustomAuthenticationProvider" />
+
+	<security:http entry-point-ref="restAuthenticationEntryPoint"
+		auto-config="true" disable-url-rewriting="true">
+		<security:intercept-url pattern="/api/tasks/lastSubmitted" access="ROLE_USER" />
+		<security:intercept-url pattern="/api/tasks/questionnaires" access="ROLE_USER" />
+		<security:intercept-url pattern="/api/tasks/questionnaires/excel" access="ROLE_USER" />
+		<security:intercept-url pattern="/api/tasks/writingTests" access="ROLE_USER" />
+		<security:intercept-url pattern="/api/tasks/speechTests" access="ROLE_USER" />
+		<security:intercept-url pattern="/api/patients" method="GET" access="ROLE_USER" />
+		<security:intercept-url pattern="/api/patients" method="DELETE" access="ROLE_USER" />		
+		<security:form-login
+			authentication-success-handler-ref="mySuccessHandler"
+			authentication-failure-handler-ref="myFailureHandler" />
+		<security:logout />
+	</security:http>
+
+	<security:authentication-manager
+		erase-credentials="false">
+		<security:authentication-provider
+			ref="customAuthenticationProvider" />
+	</security:authentication-manager>
+</beans>
